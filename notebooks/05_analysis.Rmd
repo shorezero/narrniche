@@ -1,0 +1,96 @@
+---
+title: "narrniche statistical analysis"
+output: html_document
+date: "2025-12-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(report)
+```
+
+```{r}
+data <- read_csv("../data/processed/data.csv")
+data <- drop_na(data)
+```
+
+
+## Count Model
+
+```{r}
+cm_else <- lmer(lf_count_log ~ else_freq_log + (1|lang) + (1|field), data)
+summary(cm_else)
+
+cm_narr <- lmer(lf_count_log ~ narr_freq_log + (1|lang) + (1|field), data)
+summary(cm_narr)
+
+cm_narrelse <- lmer(lf_count_log ~ narr_freq_log + else_freq_log + (1|lang) + (1|field), data)
+summary(cm_narrelse)
+
+anova(cm_else, cm_narr, cm_narrelse)
+```
+
+
+## Entropy Model
+
+```{r}
+em_else <- lmer(lf_entropy ~ else_freq_log + (1|lang) + (1|field), data)
+summary(em_else)
+
+em_narr <- lmer(lf_entropy ~ narr_freq_log + (1|lang) + (1|field), data)
+summary(em_narr)
+
+em_narrelse <- lmer(lf_entropy ~ narr_freq_log + else_freq_log + (1|lang) + (1|field), data)
+summary(em_narrelse)
+
+anova(em_else, em_narr, em_narrelse)
+```
+
+
+
+```{r}
+slope_A = 0.14578
+slope_B = 0.07669
+se_A = 0.01268
+se_B = 0.01132
+n = 3197
+
+# Calculate Welch's T-test statistic
+t_stat <- (slope_A - slope_B) / sqrt(se_A^2 + se_B^2)
+
+# Degrees of freedom
+df <- ((se_A^2 + se_B^2)^2) / (((se_A^2)^2 / (n - 2)) + ((se_B^2)^2 / (n - 2)))
+
+# Calculate p-value
+p_value <- 2 * pt(-abs(t_stat), df)
+
+# Display the test statistic and p-value
+t_stat
+p_value
+```
+
+
+```{r}
+
+slope_A = 0.14828
+slope_B = 0.07635
+se_A = 0.01288
+se_B = 0.01138
+n = 3200
+
+# Calculate Welch's T-test statistic
+t_stat <- (slope_A - slope_B) / sqrt(se_A^2 + se_B^2)
+
+# Degrees of freedom
+df <- ((se_A^2 + se_B^2)^2) / (((se_A^2)^2 / (n - 2)) + ((se_B^2)^2 / (n - 2)))
+
+# Calculate p-value
+p_value <- 2 * pt(-abs(t_stat), df)
+
+# Display the test statistic and p-value
+t_stat
+p_value
+```
